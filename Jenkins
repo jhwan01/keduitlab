@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  stages {
+    stage('git scm update') {
+      steps {
+        git url: 'https://github.com/beomtaek/cicdtest.git', branch: 'main'
+      }
+    }
+    stage('docker build and push') {
+      steps {
+        sh '''
+        sudo docker build -t jhwan01/keduitlab:purple .
+        sudo docker push jhwan01/keduitlab:purple
+        '''
+      }
+    }
+    stage('deploy and service') {
+      steps {
+        sh '''
+        sudo kubectl apply -f k8s-test.yml
+        '''
+      }
+    }
+  }
+}
